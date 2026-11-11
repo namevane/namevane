@@ -27,19 +27,15 @@ jobs:
         include:
           - name: macos-aarch64
             os: macos-latest
-            args: -- --target aarch64-apple-darwin
             rust_targets: aarch64-apple-darwin
           - name: macos-x86_64
             os: macos-latest
-            args: -- --target x86_64-apple-darwin
             rust_targets: x86_64-apple-darwin
           - name: linux-x86_64
             os: ubuntu-22.04
-            args: ""
             rust_targets: ""
           - name: windows-x86_64
             os: windows-latest
-            args: ""
             rust_targets: ""
     steps:
       - name: Checkout
@@ -88,7 +84,23 @@ jobs:
         run: npm ci
 
       - name: Build bundles
-        run: npm run tauri build ${{ matrix.args }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          extra=()
+          if [[ -n "${{ matrix.rust_targets }}" ]]; then
+            extra+=(--target "${{ matrix.rust_targets }}")
+          fi
+          # RPM rejects a hyphen in the version. MSI rejects a pre-release
+          # that is not a number. NSIS, deb, AppImage, and the macOS disk
+          # image accept a pre-release such as 0.0.1-beta.2.
+          if [[ "${GITHUB_REF_NAME}" == *-* ]]; then
+            case "${{ matrix.name }}" in
+              linux-*) extra+=(--bundles deb,appimage) ;;
+              windows-*) extra+=(--bundles nsis) ;;
+            esac
+          fi
+          npm run tauri build -- "${extra[@]}"
 
       - name: Collect installer bundles
         shell: bash

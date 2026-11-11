@@ -6,9 +6,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
-## [0.0.1-beta.1] - 2026-11-11
+## [0.0.1-beta.2] - 2026-11-11
 
-A beta tag for the release workflow. This is not `v0.1.0`.
+A beta tag for the release workflow. This is not `v0.1.0`. A pre-release builds a `.deb` and an AppImage on Linux, and an NSIS installer on Windows. The RPM and MSI packages stay on stable tags, because they cannot use a version such as `0.0.1-beta.2`.
 
 ### Added
 

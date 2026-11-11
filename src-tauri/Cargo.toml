@@ -1,6 +1,6 @@
 [package]
 name = "namevane"
-version = "0.0.1-beta.1"
+version = "0.0.1-beta.2"
 description = "Pin a website name to an address on this computer."
 authors = ["Rumen Damyanov"]
 license = "Apache-2.0"
