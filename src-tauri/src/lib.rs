@@ -1,7 +1,9 @@
+mod about;
 mod pins;
 
 use std::sync::Mutex;
 
+use about::About;
 use pins::{PinList, PinStore, PinView, UpsertPin};
 use tauri::{Manager, State};
 
@@ -38,6 +40,16 @@ fn set_pin_enabled(
         .set_enabled(&id, enabled)
 }
 
+#[tauri::command]
+fn app_about(app: tauri::AppHandle) -> About {
+    about::about(&app.package_info().version.to_string())
+}
+
+#[tauri::command]
+fn open_project_page(url: String) -> Result<(), String> {
+    about::open_project_page(&url)
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
@@ -50,7 +62,9 @@ pub fn run() {
             list_pins,
             upsert_pin,
             delete_pin,
-            set_pin_enabled
+            set_pin_enabled,
+            app_about,
+            open_project_page
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

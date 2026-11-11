@@ -8,6 +8,8 @@
     "allow-list-pins",
     "allow-upsert-pin",
     "allow-delete-pin",
-    "allow-set-pin-enabled"
+    "allow-set-pin-enabled",
+    "allow-app-about",
+    "allow-open-project-page"
   ]
 }

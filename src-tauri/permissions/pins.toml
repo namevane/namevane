@@ -17,3 +17,13 @@ commands.allow = ["delete_pin"]
 identifier = "allow-set-pin-enabled"
 description = "Turn a saved custom address on or off."
 commands.allow = ["set_pin_enabled"]
+
+[[permission]]
+identifier = "allow-app-about"
+description = "Read the Namevane version and whether a release is available."
+commands.allow = ["app_about"]
+
+[[permission]]
+identifier = "allow-open-project-page"
+description = "Open a Namevane page on GitHub in the browser."
+commands.allow = ["open_project_page"]
