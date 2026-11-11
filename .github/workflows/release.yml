@@ -115,7 +115,7 @@ jobs:
           ls -l artifacts
 
       - name: Upload bundles
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: bundles-${{ matrix.name }}
           path: artifacts/*
