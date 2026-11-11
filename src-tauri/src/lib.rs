@@ -1,11 +1,13 @@
 mod about;
 mod pins;
+mod runtime;
 mod text;
 
 use std::sync::Mutex;
 
 use about::About;
 use pins::{PinList, PinStore, PinView, UpsertPin};
+use runtime::RuntimeSettings;
 use tauri::{Manager, State};
 
 #[tauri::command]
@@ -51,12 +53,57 @@ fn open_project_page(url: String) -> Result<(), String> {
     about::open_project_page(&url)
 }
 
+#[tauri::command]
+fn runtime_settings(
+    app: tauri::AppHandle,
+    state: State<'_, Mutex<runtime::RuntimeState>>,
+) -> RuntimeSettings {
+    runtime::current(&state, &app)
+}
+
+#[tauri::command]
+fn set_language(
+    app: tauri::AppHandle,
+    state: State<'_, Mutex<runtime::RuntimeState>>,
+    language: String,
+) -> Result<RuntimeSettings, String> {
+    runtime::set_language(&state, &app, &language)
+}
+
+#[tauri::command]
+fn set_run_in_background(
+    state: State<'_, Mutex<runtime::RuntimeState>>,
+    enabled: bool,
+) -> Result<RuntimeSettings, String> {
+    runtime::set_run_in_background(&state, enabled)
+}
+
+#[tauri::command]
+fn set_open_at_login(
+    app: tauri::AppHandle,
+    state: State<'_, Mutex<runtime::RuntimeState>>,
+    enabled: bool,
+) -> Result<RuntimeSettings, String> {
+    runtime::set_open_at_login(&state, &app, enabled)
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
+        .plugin(tauri_plugin_autostart::init(
+            tauri_plugin_autostart::MacosLauncher::LaunchAgent,
+            None,
+        ))
         .setup(|app| {
             let directory = app.path().app_data_dir().expect("the app data directory");
             app.manage(Mutex::new(PinStore::open(directory.join("pins.json"))));
+            app.manage(Mutex::new(runtime::RuntimeState::open(
+                directory.join("runtime.json"),
+            )));
+            runtime::install(app.handle())?;
+            if let Some(window) = app.get_webview_window("main") {
+                let _ = window.set_title("Namevane by RumenX");
+            }
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
@@ -65,8 +112,13 @@ pub fn run() {
             delete_pin,
             set_pin_enabled,
             app_about,
-            open_project_page
+            open_project_page,
+            runtime_settings,
+            set_language,
+            set_run_in_background,
+            set_open_at_login
         ])
-        .run(tauri::generate_context!())
-        .expect("error while running tauri application");
+        .build(tauri::generate_context!())
+        .expect("error while building tauri application")
+        .run(|app, event| runtime::on_run_event(app, &event));
 }

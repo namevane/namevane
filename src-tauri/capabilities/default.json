@@ -10,6 +10,10 @@
     "allow-delete-pin",
     "allow-set-pin-enabled",
     "allow-app-about",
-    "allow-open-project-page"
+    "allow-open-project-page",
+    "allow-runtime-settings",
+    "allow-set-language",
+    "allow-set-run-in-background",
+    "allow-set-open-at-login"
   ]
 }

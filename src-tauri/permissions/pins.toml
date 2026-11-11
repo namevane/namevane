@@ -27,3 +27,23 @@ commands.allow = ["app_about"]
 identifier = "allow-open-project-page"
 description = "Open a Namevane page on GitHub in the browser."
 commands.allow = ["open_project_page"]
+
+[[permission]]
+identifier = "allow-runtime-settings"
+description = "Read whether Namevane stays running and opens at login."
+commands.allow = ["runtime_settings"]
+
+[[permission]]
+identifier = "allow-set-language"
+description = "Choose the language of Namevane."
+commands.allow = ["set_language"]
+
+[[permission]]
+identifier = "allow-set-run-in-background"
+description = "Choose whether closing the window leaves Namevane running."
+commands.allow = ["set_run_in_background"]
+
+[[permission]]
+identifier = "allow-set-open-at-login"
+description = "Choose whether Namevane opens when you log in."
+commands.allow = ["set_open_at_login"]
