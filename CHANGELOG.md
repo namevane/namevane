@@ -8,5 +8,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
-- A Tauri 2 window titled Namevane. The screen says Custom addresses. The `tray-icon` feature is enabled, and the tray itself is not shown yet.
+- English and Bulgarian. The language is chosen in Settings, and another language is another JSON file with the same keys.
+- Settings are on their own page: keep running in the background, open at login, export and import the address list, and install a newer GitHub release on macOS.
+- A local macOS install script, a menu-bar icon, and two settings: keep running when the window closes, and open when you log in.
+- An About panel: Namevane by RumenX, the current version, whether a GitHub release is available, and links to the source and releases.
+- Apply writes enabled address records into the hosts file and asks for an administrator password. Turn all off removes that block.
+- A saved list of custom addresses. Add, edit, and remove a name, and turn it on or off. A name points to an IPv4 address, an IPv6 address, or both.
+- A Tauri 2 window titled Namevane. The screen says Custom addresses.
 - Public project documents, Apache-2.0 license, and GitHub Actions workflows for tests and for publishing a tagged release with `SHA256SUMS` signed by keyless cosign.

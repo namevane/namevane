@@ -30,9 +30,11 @@ The addresses above are documentation addresses. In the app they stand for the s
 
 ## Status
 
-The window opens. It shows **Custom addresses** and nothing else yet. Pins are not saved, and nothing writes the hosts file. There is no installable release.
+The window saves a list of custom addresses. You can add, edit, and remove a name, and turn it on or off. A name points to an IPv4 address, an IPv6 address, or both. **Apply** writes those addresses into the hosts file.
 
-The first tag is `v0.1.0`, and only after the macOS apply and explanation checks pass. Until then the version in the tree is `0.0.0`. The icon is still the Tauri template icon.
+You can install a local build and open that copy instead of a development window. Settings has **Keep running in the background**, **Open at login**, export and import of the address list, and **Install update** when a newer GitHub release exists. On macOS that button downloads the release, checks its SHA-256 sum, and replaces the installed app. There is no public release yet.
+
+The first tag is `v0.1.0`, and only after the macOS apply and explanation checks pass. Until then the version in the tree is `0.0.0`. About shows that version and looks for a newer GitHub release. It does not download or install one.
 
 ## Develop
 
@@ -43,7 +45,21 @@ npm install
 npm run tauri dev
 ```
 
-The window talks to a Vite dev server on port 1420. Close the window to stop it.
+The window talks to a Vite dev server on port 1420. With **Keep running when the window closes** on, closing the window leaves Namevane in the menu bar. Quit from that icon to stop the development process. If port 1420 is already in use, quit the other Namevane window first.
+
+## Install on this Mac
+
+This builds the app and copies it to `/Applications`. The installed copy does not need Node or Rust.
+
+```bash
+script/install-macos.sh
+```
+
+The built app is also at `src-tauri/target/release/bundle/macos/Namevane.app`, inside a disk image in the same folder. It is ad-hoc signed, not notarized, so the first open uses Control-click, then Open.
+
+Turn on **Open when you log in** from the installed app. Doing it from `npm run tauri dev` would start the development copy.
+
+On Windows, `npm run tauri build` writes an installer under `src-tauri/target/release/bundle/nsis/`. On Linux it writes `.deb`, `.rpm`, and `.AppImage` packages under `src-tauri/target/release/bundle/`. The same two settings are in the window on every system.
 
 ## Tests
 
