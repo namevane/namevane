@@ -1,0 +1,196 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v[0-9]+.[0-9]+.[0-9]+"
+      - "v[0-9]+.[0-9]+.[0-9]+-*"
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Test
+    uses: ./.github/workflows/ci.yml
+    permissions:
+      contents: read
+
+  build:
+    name: Build (${{ matrix.name }})
+    needs: test
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 90
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: macos-aarch64
+            os: macos-latest
+            args: -- --target aarch64-apple-darwin
+            rust_targets: aarch64-apple-darwin
+          - name: macos-x86_64
+            os: macos-latest
+            args: -- --target x86_64-apple-darwin
+            rust_targets: x86_64-apple-darwin
+          - name: linux-x86_64
+            os: ubuntu-22.04
+            args: ""
+            rust_targets: ""
+          - name: windows-x86_64
+            os: windows-latest
+            args: ""
+            rust_targets: ""
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Install Linux dependencies
+        if: matrix.os == 'ubuntu-22.04'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libwebkit2gtk-4.1-dev \
+            build-essential \
+            curl \
+            wget \
+            file \
+            libxdo-dev \
+            libssl-dev \
+            libayatana-appindicator3-dev \
+            librsvg2-dev \
+            patchelf \
+            xdg-utils \
+            libfuse2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: lts/*
+          cache: npm
+
+      - name: Install Rust
+        if: matrix.rust_targets == ''
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Install Rust for a cross target
+        if: matrix.rust_targets != ''
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.rust_targets }}
+
+      - name: Cache Rust
+        uses: swatinem/rust-cache@v2
+        with:
+          workspaces: "./src-tauri -> target"
+
+      - name: Install frontend dependencies
+        run: npm ci
+
+      - name: Build bundles
+        run: npm run tauri build ${{ matrix.args }}
+
+      - name: Collect installer bundles
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p artifacts
+          found=0
+          while IFS= read -r -d '' file; do
+            found=1
+            base="$(basename "$file")"
+            if [[ -e "artifacts/$base" ]]; then
+              echo "::error::Two bundles share the name ${base}"
+              exit 1
+            fi
+            cp "$file" "artifacts/$base"
+          done < <(find src-tauri/target -path '*/bundle/*' -type f \
+            \( -name '*.dmg' -o -name '*.deb' -o -name '*.rpm' \
+               -o -name '*.AppImage' -o -name '*.appimage' \
+               -o -name '*.msi' -o -name '*.exe' \) -print0)
+          if [[ "$found" -eq 0 ]]; then
+            echo "::error::No installer bundles were produced"
+            exit 1
+          fi
+          ls -l artifacts
+
+      - name: Upload bundles
+        uses: actions/upload-artifact@v4
+        with:
+          name: bundles-${{ matrix.name }}
+          path: artifacts/*
+          if-no-files-found: error
+
+  publish:
+    name: Publish
+    needs: build
+    runs-on: ubuntu-22.04
+    timeout-minutes: 20
+    permissions:
+      contents: write
+      id-token: write
+    steps:
+      - name: Download bundles
+        uses: actions/download-artifact@v4
+        with:
+          pattern: bundles-*
+          path: dist
+
+      - name: Install cosign
+        uses: sigstore/cosign-installer@v3
+
+      - name: Write and sign SHA256SUMS
+        run: |
+          set -euo pipefail
+          mkdir -p flat
+          while IFS= read -r -d '' file; do
+            base="$(basename "$file")"
+            if [[ -e "flat/$base" ]]; then
+              echo "::error::Two bundles share the name ${base}"
+              exit 1
+            fi
+            cp "$file" "flat/$base"
+          done < <(find dist -type f -print0)
+
+          if [[ -z "$(ls -A flat)" ]]; then
+            echo "::error::No bundles were downloaded"
+            exit 1
+          fi
+
+          (
+            cd flat
+            sha256sum -- * > SHA256SUMS
+          )
+
+          cosign sign-blob --yes --bundle flat/SHA256SUMS.bundle flat/SHA256SUMS
+          cosign verify-blob \
+            --bundle flat/SHA256SUMS.bundle \
+            --certificate-identity "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/.github/workflows/release.yml@${GITHUB_REF}" \
+            --certificate-oidc-issuer "https://token.actions.githubusercontent.com" \
+            flat/SHA256SUMS
+
+      - name: Publish the GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          cat > notes.md <<EOF
+          Unsigned build of Namevane ${GITHUB_REF_NAME}.
+
+          These bundles are not signed with an Apple Developer ID and are not Authenticode-signed. macOS Gatekeeper and Windows SmartScreen will warn. The macOS app is ad-hoc signed so Apple Silicon does not mark the download as damaged.
+
+          Check \`SHA256SUMS\` with \`SHA256SUMS.bundle\` before installing. The verification command is in the repository README.
+
+          Apple Developer ID, notarization, and Authenticode are a later release.
+          EOF
+
+          if gh release view "${GITHUB_REF_NAME}" --repo "${GITHUB_REPOSITORY}" >/dev/null 2>&1; then
+            gh release upload "${GITHUB_REF_NAME}" flat/* \
+              --repo "${GITHUB_REPOSITORY}" \
+              --clobber
+          else
+            gh release create "${GITHUB_REF_NAME}" flat/* \
+              --repo "${GITHUB_REPOSITORY}" \
+              --title "Namevane ${GITHUB_REF_NAME}" \
+              --notes-file notes.md
+          fi
