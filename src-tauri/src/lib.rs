@@ -1,7 +1,12 @@
 mod about;
+mod hosts;
 mod pins;
 mod runtime;
 mod text;
+
+pub fn apply_hosts_file(path: &str) -> i32 {
+    hosts::apply_privileged(std::path::Path::new(path))
+}
 
 use std::sync::Mutex;
 
@@ -130,6 +135,68 @@ fn import_pins(
         .import_text(&text)
 }
 
+#[derive(serde::Serialize)]
+#[serde(rename_all = "camelCase")]
+struct HostsStatus {
+    applied: bool,
+    block_present: bool,
+}
+
+fn read_hosts_status(store: &PinStore) -> Result<HostsStatus, String> {
+    let text = hosts::read_hosts(std::path::Path::new("/etc/hosts"))?;
+    status_for(&text, &store.hosts_lines())
+}
+
+fn status_for(text: &str, lines: &[String]) -> Result<HostsStatus, String> {
+    Ok(HostsStatus {
+        applied: hosts::in_sync(text, lines)?,
+        block_present: hosts::has_block(text)?,
+    })
+}
+
+#[tauri::command]
+fn hosts_status(store: State<'_, Mutex<PinStore>>) -> Result<HostsStatus, String> {
+    let store = store.lock().unwrap_or_else(|err| err.into_inner());
+    read_hosts_status(&store)
+}
+
+#[tauri::command]
+fn apply_pins(store: State<'_, Mutex<PinStore>>) -> Result<HostsStatus, String> {
+    change_hosts(&store, false)
+}
+
+#[tauri::command]
+fn turn_off_pins(store: State<'_, Mutex<PinStore>>) -> Result<HostsStatus, String> {
+    change_hosts(&store, true)
+}
+
+fn change_hosts(store: &State<'_, Mutex<PinStore>>, turn_off: bool) -> Result<HostsStatus, String> {
+    let (lines, directory, current) = {
+        let store = store.lock().unwrap_or_else(|err| err.into_inner());
+        let current = hosts::read_hosts(std::path::Path::new("/etc/hosts"))?;
+        if turn_off && !hosts::has_block(&current)? {
+            return read_hosts_status(&store);
+        }
+        let lines = if turn_off {
+            Vec::new()
+        } else {
+            store.hosts_lines()
+        };
+        if lines.is_empty() && !hosts::has_block(&current)? {
+            return status_for(&current, &lines);
+        }
+        let _ = hosts::render(&current, &lines)?;
+        (lines, store.directory(), current)
+    };
+    hosts::backup_hosts(&current, &directory)?;
+    hosts::prompt_apply(&lines, &directory.join("apply-command.json"))?;
+    {
+        let mut store = store.lock().unwrap_or_else(|err| err.into_inner());
+        store.mark_applied()?;
+        read_hosts_status(&store)
+    }
+}
+
 #[tauri::command]
 fn install_update(app: tauri::AppHandle) -> Result<(), String> {
     let version = app.package_info().version.to_string();
@@ -184,7 +251,10 @@ pub fn run() {
             set_open_at_login,
             export_pins,
             import_pins,
-            install_update
+            install_update,
+            hosts_status,
+            apply_pins,
+            turn_off_pins
         ])
         .build(tauri::generate_context!())
         .expect("error while building tauri application")

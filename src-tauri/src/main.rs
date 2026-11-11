@@ -2,5 +2,10 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 fn main() {
+    let mut args = std::env::args().skip(1);
+    if args.next().as_deref() == Some("--apply-hosts") {
+        let path = args.next().unwrap_or_default();
+        std::process::exit(namevane_lib::apply_hosts_file(&path));
+    }
     namevane_lib::run()
 }

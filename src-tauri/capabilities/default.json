@@ -17,6 +17,9 @@
     "allow-set-open-at-login",
     "allow-export-pins",
     "allow-import-pins",
+    "allow-hosts-status",
+    "allow-apply-pins",
+    "allow-turn-off-pins",
     "allow-install-update"
   ]
 }

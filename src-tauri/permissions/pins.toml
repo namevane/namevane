@@ -59,6 +59,21 @@ description = "Add addresses from a saved list."
 commands.allow = ["import_pins"]
 
 [[permission]]
+identifier = "allow-hosts-status"
+description = "See whether this computer is using the saved addresses."
+commands.allow = ["hosts_status"]
+
+[[permission]]
+identifier = "allow-apply-pins"
+description = "Write the saved addresses into the hosts file."
+commands.allow = ["apply_pins"]
+
+[[permission]]
+identifier = "allow-turn-off-pins"
+description = "Remove Namevane's addresses from the hosts file."
+commands.allow = ["turn_off_pins"]
+
+[[permission]]
 identifier = "allow-install-update"
 description = "Download a newer Namevane release and replace the installed app."
 commands.allow = ["install_update"]
