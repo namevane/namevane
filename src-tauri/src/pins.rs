@@ -485,6 +485,18 @@ mod tests {
     }
 
     #[test]
+    fn a_disabled_pin_is_left_out_of_the_hosts_lines() {
+        let (_dir, mut store) = temp_store();
+        let pin = add(&mut store, "app.example.com", "203.0.113.10", "").unwrap();
+        add(&mut store, "other.example.com", "198.51.100.8", "").unwrap();
+        store.set_enabled(&pin.id, false).unwrap();
+        assert_eq!(
+            store.hosts_lines(),
+            vec!["198.51.100.8 other.example.com".to_string()]
+        );
+    }
+
+    #[test]
     fn a_saved_name_without_an_address_is_dropped() {
         let dir = std::env::temp_dir().join(format!("namevane-pins-{}", Uuid::new_v4()));
         fs::create_dir_all(&dir).unwrap();

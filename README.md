@@ -2,7 +2,7 @@
 
 Namevane pins a website name to an address on this computer. You add the name and the address, then apply the pin. After that, this computer opens that name at that address. The browser keeps the name in the address bar and still checks the certificate.
 
-The name is provisional. It can change any time before the first public release. The window title stays **Namevane**. The screen says **Custom addresses**.
+The name is provisional. It can change any time before the first public release. The window title is **Namevane by RumenX**. The screen says **Custom addresses**.
 
 Namevane is one repository. The window, the Rust core, and the helper that writes the hosts file ship together, on the `master` branch, as one version.
 
@@ -26,7 +26,7 @@ The addresses above are documentation addresses. In the app they stand for the s
 - Profiles, a hosts-file text editor, and remote hosts lists.
 - A resident administrator service. The password prompt runs only while a change is written.
 - Decrypting TLS, installing a private certificate authority, or hiding a certificate warning.
-- An account, telemetry, an updater, a database, and a local web server.
+- An account, telemetry, a silent updater, a database, and a local web server. A newer release is installed only after you press the button.
 
 ## Status
 
@@ -34,7 +34,7 @@ The window saves a list of custom addresses. You can add, edit, and remove a nam
 
 You can install a local build and open that copy instead of a development window. Settings has **Keep running in the background**, **Open at login**, export and import of the address list, and **Install update** when a newer GitHub release exists. On macOS that button downloads the release, checks its SHA-256 sum, and replaces the installed app. There is no public release yet.
 
-The first tag is `v0.1.0`, and only after the macOS apply and explanation checks pass. Until then the version in the tree is `0.0.0`. About shows that version and looks for a newer GitHub release. It does not download or install one.
+The first tag is `v0.1.0`, and only after the macOS apply and explanation checks pass. Until then the version in the tree is `0.0.0`. About shows that version and looks for a newer GitHub release. On macOS, **Install update** downloads that release after you press the button.
 
 ## Develop
 
@@ -45,7 +45,7 @@ npm install
 npm run tauri dev
 ```
 
-The window talks to a Vite dev server on port 1420. With **Keep running when the window closes** on, closing the window leaves Namevane in the menu bar. Quit from that icon to stop the development process. If port 1420 is already in use, quit the other Namevane window first.
+The window talks to a Vite dev server on port 1420. With **Keep running in the background** on, closing the window leaves Namevane in the menu bar. Quit from that icon to stop the development process. If port 1420 is already in use, quit the other Namevane window first.
 
 ## Install on this Mac
 
@@ -57,7 +57,7 @@ script/install-macos.sh
 
 The built app is also at `src-tauri/target/release/bundle/macos/Namevane.app`, inside a disk image in the same folder. It is ad-hoc signed, not notarized, so the first open uses Control-click, then Open.
 
-Turn on **Open when you log in** from the installed app. Doing it from `npm run tauri dev` would start the development copy.
+Turn on **Open at login** from the installed app. Doing it from `npm run tauri dev` would start the development copy.
 
 On Windows, `npm run tauri build` writes an installer under `src-tauri/target/release/bundle/nsis/`. On Linux it writes `.deb`, `.rpm`, and `.AppImage` packages under `src-tauri/target/release/bundle/`. The same two settings are in the window on every system.
 
@@ -98,7 +98,7 @@ Before tagging, set the same version in `package.json`, `src-tauri/Cargo.toml`, 
 
 ```text
 src/            the window
-src-tauri/      the Rust application and, later, the helper
+src-tauri/      the Rust application. Apply runs this same binary once, then it exits
 .github/        tests and the release workflow
 ```
 
