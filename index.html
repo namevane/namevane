@@ -4,13 +4,130 @@
     <meta charset="UTF-8" />
     <link rel="stylesheet" href="/src/styles.css" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Namevane</title>
+    <title>Namevane by RumenX</title>
     <script type="module" src="/src/main.ts" defer></script>
   </head>
 
   <body>
-    <main class="container">
-      <h1>Custom addresses</h1>
-    </main>
+    <header class="banner">
+      <div class="banner-row">
+        <h1 id="page-title">Custom addresses</h1>
+        <div class="banner-actions">
+          <nav class="tabs" aria-label="Pages">
+            <button type="button" class="tab is-selected" data-page="addresses" aria-selected="true" data-i18n="nav.addresses">
+              Addresses
+            </button>
+            <button type="button" class="tab" data-page="settings" aria-selected="false" data-i18n="nav.settings">Settings</button>
+          </nav>
+          <button id="about-open" type="button" data-i18n="nav.about">About</button>
+        </div>
+      </div>
+      <p id="notice" class="notice" hidden role="status"></p>
+      <p id="update-note" class="update-note" hidden>
+        <span id="update-note-text"></span>
+        <button id="update-install" type="button" data-i18n="action.install">Install</button>
+      </p>
+    </header>
+
+    <div id="page-addresses" class="page">
+      <form id="pin-form" autocomplete="off">
+        <label class="wide">
+          <span data-i18n="field.name">Name</span>
+          <input id="name" name="name" spellcheck="false" autocapitalize="off" />
+        </label>
+        <label>
+          <span data-i18n="field.ipv4">IPv4</span>
+          <input id="ipv4" spellcheck="false" autocapitalize="off" placeholder="203.0.113.10" data-i18n-placeholder="placeholder.ipv4" />
+        </label>
+        <label>
+          <span data-i18n="field.ipv6">IPv6</span>
+          <input id="ipv6" spellcheck="false" autocapitalize="off" placeholder="2001:db8::10" data-i18n-placeholder="placeholder.ipv6" />
+        </label>
+        <div class="form-actions">
+          <label class="check">
+            <input id="enabled" name="enabled" type="checkbox" checked />
+            <span data-i18n="field.on">On</span>
+          </label>
+          <button id="save" type="submit" data-i18n="action.add">Add</button>
+          <button id="cancel" type="button" hidden data-i18n="action.cancel">Cancel</button>
+        </div>
+      </form>
+
+      <div class="apply-row">
+        <p id="hosts-state" hidden></p>
+        <button id="apply" type="button" data-i18n="action.apply">Apply</button>
+        <button id="turn-off" type="button" data-i18n="action.turnOff" hidden>Turn all off</button>
+      </div>
+
+      <p id="load-error" class="error" role="alert" hidden></p>
+      <p id="empty" data-i18n="empty">No addresses yet.</p>
+      <ul id="pins"></ul>
+    </div>
+
+    <div id="page-settings" class="page" hidden>
+      <section>
+        <h2 data-i18n="settings.language">Language</h2>
+        <label class="language">
+          <select id="language">
+            <option value="en">English</option>
+            <option value="bg">Български</option>
+          </select>
+        </label>
+      </section>
+
+      <section>
+        <h2 data-i18n="settings.running">Running</h2>
+        <label class="check">
+          <input id="background" type="checkbox" checked />
+          <span data-i18n="settings.background">Keep running in the background</span>
+        </label>
+        <p class="hint" data-i18n="settings.backgroundHint">Closing the window leaves Namevane in the menu bar. Quit from that icon.</p>
+        <label class="check">
+          <input id="login" type="checkbox" />
+          <span data-i18n="settings.login">Open at login</span>
+        </label>
+        <p class="hint" data-i18n="settings.loginHint">Starts the installed app when you log in.</p>
+      </section>
+
+      <section>
+        <h2 data-i18n="settings.records">Records</h2>
+        <p class="hint" data-i18n="settings.recordsHint">Save this list, or add names from a list you saved earlier.</p>
+        <div class="form-actions">
+          <button id="export-pins" type="button" data-i18n="action.export">Export</button>
+          <button id="import-pins" type="button" data-i18n="action.import">Import</button>
+        </div>
+      </section>
+
+      <section>
+        <h2 data-i18n="settings.updates">Updates</h2>
+        <dl>
+          <dt data-i18n="settings.version">Version</dt>
+          <dd id="settings-version" data-i18n="settings.checking">Checking…</dd>
+          <dt data-i18n="settings.release">Release</dt>
+          <dd id="settings-update" data-i18n="settings.checking">Checking…</dd>
+        </dl>
+        <div class="form-actions">
+          <button id="settings-install" type="button" hidden data-i18n="action.installUpdate">Install update</button>
+          <button id="settings-releases" type="button" data-i18n="action.releases">Releases</button>
+        </div>
+      </section>
+    </div>
+
+    <dialog id="about">
+      <img src="/icon.png" width="64" height="64" alt="" />
+      <h2>Namevane</h2>
+      <p data-i18n="about.summary">Points a website name at an address on this computer.</p>
+      <dl>
+        <dt data-i18n="settings.version">Version</dt>
+        <dd id="about-version" data-i18n="settings.checking">Checking…</dd>
+      </dl>
+      <div class="about-actions">
+        <button id="about-source" type="button" data-i18n="action.source">Source on GitHub</button>
+        <button id="about-releases" type="button" data-i18n="action.releases">Releases</button>
+      </div>
+      <form method="dialog">
+        <button value="close" data-i18n="action.close">Close</button>
+      </form>
+    </dialog>
   </body>
 </html>
