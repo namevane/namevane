@@ -1,5 +1,6 @@
-# Local notes and editor state. These stay on the author's machine.
+# Local notes, wiki source, and editor state. These stay on the author's machine.
 .ai/
+wiki/
 .cursor/
 .cursorrules
 .cursorignore

@@ -18,7 +18,7 @@ When `.ai/plan.md` is on the machine, it is the implementation sequence. Follow 
 
 ## Repository rules
 
-- Do not commit `.ai/`, `.cursor/`, `.vscode/`, secrets, `node_modules/`, or `target/`.
+- Do not commit `.ai/`, `wiki/`, `.cursor/`, `.vscode/`, secrets, `node_modules/`, or `target/`. `wiki/` is the local source for the GitHub wiki, including the script that publishes it.
 - The license is Apache-2.0. The text is `LICENSE.md`. Machine-readable license fields live in `package.json` and `src-tauri/Cargo.toml`.
 - Keep `package.json`, `src-tauri/Cargo.toml`, and `src-tauri/tauri.conf.json` on the same version. Do not tag `v0.1.0` until the macOS apply and explanation checks have passed.
 - Tests run from `.github/workflows/ci.yml`. A tag `vX.Y.Z` runs `.github/workflows/release.yml`, which publishes unsigned bundles plus `SHA256SUMS` and a keyless cosign bundle. Do not add Apple notarization or Authenticode to that workflow.
