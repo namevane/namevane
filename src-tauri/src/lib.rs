@@ -1,5 +1,6 @@
 mod about;
 mod pins;
+mod text;
 
 use std::sync::Mutex;
 

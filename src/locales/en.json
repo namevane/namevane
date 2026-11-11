@@ -1,0 +1,149 @@
+{
+  "nav": {
+    "addresses": "Addresses",
+    "settings": "Settings",
+    "about": "About"
+  },
+  "page": {
+    "addresses": "Custom addresses",
+    "settings": "Settings"
+  },
+  "field": {
+    "name": "Name",
+    "ipv4": "IPv4",
+    "ipv6": "IPv6",
+    "on": "On"
+  },
+  "placeholder": {
+    "ipv4": "203.0.113.10",
+    "ipv6": "2001:db8::10"
+  },
+  "action": {
+    "add": "Add",
+    "save": "Save",
+    "cancel": "Cancel",
+    "edit": "Edit",
+    "remove": "Remove",
+    "export": "Export",
+    "import": "Import",
+    "install": "Install",
+    "installUpdate": "Install update",
+    "releases": "Releases",
+    "source": "Source on GitHub",
+    "close": "Close",
+    "apply": "Apply",
+    "turnOff": "Turn all off"
+  },
+  "state": {
+    "on": "On",
+    "off": "Off"
+  },
+  "empty": "No addresses yet.",
+  "list": {
+    "one": "Points to {address}",
+    "both": "Points to {first} and {second}",
+    "none": "Points nowhere"
+  },
+  "notice": {
+    "added": "Added {name}.",
+    "saved": "Saved {name}.",
+    "removed": "Removed {name}.",
+    "setting": "Saved.",
+    "exported": "Saved the list.",
+    "importedOne": "Added 1 name.",
+    "importedMany": "Added {count} names.",
+    "skipped": "{count} already on the list.",
+    "downloading": "Downloading the update…",
+    "reopen": "Namevane will close and open the new copy.",
+    "needAddress": "Type an IPv4 or IPv6 address."
+  },
+  "hosts": {
+    "notApplied": "This computer is not using this list.",
+    "applied": "Applied.",
+    "turnedOff": "Turned off.",
+    "cancelled": "Nothing was changed."
+  },
+  "settings": {
+    "language": "Language",
+    "running": "Running",
+    "background": "Keep running in the background",
+    "backgroundHint": "Closing the window leaves Namevane in the menu bar. Quit from that icon.",
+    "login": "Open at login",
+    "loginHint": "Starts the installed app when you log in.",
+    "records": "Records",
+    "recordsHint": "Save this list, or add names from a list you saved earlier.",
+    "updates": "Updates",
+    "version": "Version",
+    "release": "Release",
+    "checking": "Checking…"
+  },
+  "about": {
+    "summary": "Points a website name at an address on this computer."
+  },
+  "update": {
+    "none": "No public release yet.",
+    "current": "This is the latest release.",
+    "available": "Version {version} is available."
+  },
+  "tray": {
+    "open": "Open Namevane",
+    "quit": "Quit Namevane"
+  },
+  "error": {
+    "nameRequired": "Type a name.",
+    "targetRequired": "Type an address.",
+    "noScheme": "Type the name only, without https://.",
+    "badAddress": "That address is not an IPv4 or IPv6 address.",
+    "badName": "That name is not a website name.",
+    "wildcard": "A wildcard is not a single name. Type the full name.",
+    "nameNotAddress": "Type a website name, not an address.",
+    "localhost": "localhost is already this computer. Type a different name.",
+    "duplicate": "That name is already on the list.",
+    "missing": "That address is no longer on the list.",
+    "oneEach": "Use one IPv4 address and one IPv6 address.",
+    "listSave": "The list could not be saved.",
+    "listRead": "The saved list could not be read.",
+    "listWrite": "The saved list could not be written.",
+    "listVersion": "The saved list is from a newer Namevane.",
+    "importFormat": "That file is not a Namevane list.",
+    "importVersion": "That list is from a newer Namevane.",
+    "importEmpty": "That file has no names.",
+    "importNone": "Those names are already on the list.",
+    "location": "That location could not be used.",
+    "fileRead": "That file could not be read.",
+    "versionUnreadable": "This build's version could not be read.",
+    "releaseUnreadable": "A release was found, but its version could not be read.",
+    "noRelease": "No public release yet.",
+    "latest": "This is the latest release.",
+    "noInstaller": "This release has no installer for this computer.",
+    "noChecksum": "This release has no checksum file.",
+    "badDownload": "The download is not from the Namevane releases.",
+    "updateSave": "The update could not be saved.",
+    "checksumMissing": "The checksum file does not list this installer.",
+    "checksumMismatch": "The download did not match its checksum.",
+    "checksumRead": "The checksum file could not be read.",
+    "updateRead": "The update could not be read.",
+    "updateDownload": "The update could not be downloaded.",
+    "installerOpen": "The installer could not be opened.",
+    "installerMissing": "The installer does not contain Namevane.",
+    "updatePrepare": "The update could not be prepared.",
+    "installFirst": "Install Namevane first. An update replaces that copy.",
+    "installerClose": "The installer could not be closed.",
+    "updateStart": "The update could not be started.",
+    "browser": "The browser could not be opened.",
+    "notRepository": "That link is not the Namevane repository.",
+    "releaseCheck": "Could not check for a release.",
+    "loginOn": "Open at login could not be turned on. Install Namevane, then try again from that copy.",
+    "loginOff": "Open at login could not be turned off.",
+    "tray": "The menu bar icon could not be created.",
+    "settingSave": "The setting could not be saved.",
+    "manualInstall": "Download the release and install it. Automatic install is available on macOS.",
+    "hostsRead": "The hosts file could not be read.",
+    "hostsHuge": "The hosts file is unexpectedly large. Nothing was written.",
+    "hostsBinary": "The hosts file does not look like text. Nothing was written.",
+    "hostsCorrupt": "The Namevane block in the hosts file is incomplete. Nothing was written.",
+    "hostsWrite": "The hosts file could not be written.",
+    "hostsBackup": "A backup of the hosts file could not be saved.",
+    "hostsUnsupported": "Writing the hosts file is available on macOS."
+  }
+}
