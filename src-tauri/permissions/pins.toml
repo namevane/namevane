@@ -1,0 +1,19 @@
+[[permission]]
+identifier = "allow-list-pins"
+description = "Read the saved list of custom addresses."
+commands.allow = ["list_pins"]
+
+[[permission]]
+identifier = "allow-upsert-pin"
+description = "Add or update a custom address."
+commands.allow = ["upsert_pin"]
+
+[[permission]]
+identifier = "allow-delete-pin"
+description = "Remove a custom address from the saved list."
+commands.allow = ["delete_pin"]
+
+[[permission]]
+identifier = "allow-set-pin-enabled"
+description = "Turn a saved custom address on or off."
+commands.allow = ["set_pin_enabled"]

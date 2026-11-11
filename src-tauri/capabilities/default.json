@@ -3,5 +3,11 @@
   "identifier": "default",
   "description": "Capability for the main window",
   "windows": ["main"],
-  "permissions": ["core:default"]
+  "permissions": [
+    "core:default",
+    "allow-list-pins",
+    "allow-upsert-pin",
+    "allow-delete-pin",
+    "allow-set-pin-enabled"
+  ]
 }

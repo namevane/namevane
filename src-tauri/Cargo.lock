@@ -1839,10 +1839,12 @@ dependencies = [
 name = "namevane"
 version = "0.0.0"
 dependencies = [
+ "idna",
  "serde",
  "serde_json",
  "tauri",
  "tauri-build",
+ "uuid",
 ]
 
 [[package]]
