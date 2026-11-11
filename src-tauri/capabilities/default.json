@@ -14,6 +14,9 @@
     "allow-runtime-settings",
     "allow-set-language",
     "allow-set-run-in-background",
-    "allow-set-open-at-login"
+    "allow-set-open-at-login",
+    "allow-export-pins",
+    "allow-import-pins",
+    "allow-install-update"
   ]
 }

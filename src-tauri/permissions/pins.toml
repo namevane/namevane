@@ -47,3 +47,18 @@ commands.allow = ["set_run_in_background"]
 identifier = "allow-set-open-at-login"
 description = "Choose whether Namevane opens when you log in."
 commands.allow = ["set_open_at_login"]
+
+[[permission]]
+identifier = "allow-export-pins"
+description = "Save the address list to a file."
+commands.allow = ["export_pins"]
+
+[[permission]]
+identifier = "allow-import-pins"
+description = "Add addresses from a saved list."
+commands.allow = ["import_pins"]
+
+[[permission]]
+identifier = "allow-install-update"
+description = "Download a newer Namevane release and replace the installed app."
+commands.allow = ["install_update"]

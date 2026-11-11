@@ -9,6 +9,7 @@ use about::About;
 use pins::{PinList, PinStore, PinView, UpsertPin};
 use runtime::RuntimeSettings;
 use tauri::{Manager, State};
+use tauri_plugin_dialog::DialogExt;
 
 #[tauri::command]
 fn list_pins(store: State<'_, Mutex<PinStore>>) -> PinList {
@@ -79,6 +80,69 @@ fn set_run_in_background(
 }
 
 #[tauri::command]
+fn export_pins(app: tauri::AppHandle, store: State<'_, Mutex<PinStore>>) -> Result<bool, String> {
+    let text = store
+        .lock()
+        .unwrap_or_else(|err| err.into_inner())
+        .export_text()?;
+    let chosen = app
+        .dialog()
+        .file()
+        .add_filter("JSON", &["json"])
+        .set_file_name("namevane-addresses.json")
+        .set_title("Export addresses")
+        .blocking_save_file();
+    let Some(chosen) = chosen else {
+        return Ok(false);
+    };
+    let path = chosen
+        .into_path()
+        .map_err(|_| "error.location".to_string())?;
+    std::fs::write(path, text).map_err(|_| "error.listSave".to_string())?;
+    Ok(true)
+}
+
+#[tauri::command]
+fn import_pins(
+    app: tauri::AppHandle,
+    store: State<'_, Mutex<PinStore>>,
+) -> Result<pins::ImportReport, String> {
+    let chosen = app
+        .dialog()
+        .file()
+        .add_filter("JSON", &["json"])
+        .set_title("Import addresses")
+        .blocking_pick_file();
+    let Some(chosen) = chosen else {
+        return Ok(pins::ImportReport {
+            added: 0,
+            skipped: 0,
+        });
+    };
+    let path = chosen
+        .into_path()
+        .map_err(|_| "error.fileRead".to_string())?;
+    let text =
+        std::fs::read_to_string(path).map_err(|_| "error.fileRead".to_string())?;
+    store
+        .lock()
+        .unwrap_or_else(|err| err.into_inner())
+        .import_text(&text)
+}
+
+#[tauri::command]
+fn install_update(app: tauri::AppHandle) -> Result<(), String> {
+    let version = app.package_info().version.to_string();
+    about::install_update(&version)?;
+    let app = app.clone();
+    std::thread::spawn(move || {
+        std::thread::sleep(std::time::Duration::from_millis(400));
+        runtime::request_quit(&app);
+    });
+    Ok(())
+}
+
+#[tauri::command]
 fn set_open_at_login(
     app: tauri::AppHandle,
     state: State<'_, Mutex<runtime::RuntimeState>>,
@@ -90,6 +154,7 @@ fn set_open_at_login(
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
+        .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_autostart::init(
             tauri_plugin_autostart::MacosLauncher::LaunchAgent,
             None,
@@ -116,7 +181,10 @@ pub fn run() {
             runtime_settings,
             set_language,
             set_run_in_background,
-            set_open_at_login
+            set_open_at_login,
+            export_pins,
+            import_pins,
+            install_update
         ])
         .build(tauri::generate_context!())
         .expect("error while building tauri application")
