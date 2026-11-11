@@ -34,7 +34,7 @@ The window saves a list of custom addresses. You can add, edit, and remove a nam
 
 You can install a local build and open that copy instead of a development window. Settings has **Keep running in the background**, **Open at login**, export and import of the address list, and **Install update** when a newer GitHub release exists. On macOS that button downloads the release, checks its SHA-256 sum, and replaces the installed app. There is no public release yet.
 
-The first tag is `v0.1.0`, and only after the macOS apply and explanation checks pass. Until then the version in the tree is `0.0.0`. About shows that version and looks for a newer GitHub release. On macOS, **Install update** downloads that release after you press the button.
+The first stable tag is `v0.1.0`, and only after the macOS apply and explanation checks pass. A beta tag such as `v0.0.1-beta.1` can exercise the release workflow before that. About shows the version in this build and looks for a newer GitHub release. On macOS, **Install update** downloads that release after you press the button.
 
 ## Develop
 

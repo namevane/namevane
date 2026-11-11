@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [0.0.1-beta.1] - 2026-11-11
+
+A beta tag for the release workflow. This is not `v0.1.0`.
+
 ### Added
 
 - English and Bulgarian. The language is chosen in Settings, and another language is another JSON file with the same keys.

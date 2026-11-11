@@ -44,7 +44,7 @@ Do not commit `.ai/`, `.cursor/`, `.vscode/`, secrets, or built artifacts. `.git
 
 ## Versions
 
-The tree stays at `0.0.0` until the first public tag. `v0.1.0` waits until the macOS apply and explanation checks pass.
+`v0.1.0` waits until the macOS apply and explanation checks pass. A beta tag may be published before that.
 
 When a release is ready, set the same version in all three places:
 
