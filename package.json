@@ -1,7 +1,7 @@
 {
   "name": "namevane",
   "private": true,
-  "version": "0.0.1-beta.2",
+  "version": "0.0.1-beta.3",
   "description": "Point a domain name to the address you choose.",
   "license": "Apache-2.0",
   "type": "module",

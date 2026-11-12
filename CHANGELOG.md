@@ -6,9 +6,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [0.0.1-beta.3] - 2026-11-12
+
+A beta tag for the release workflow. This is not `v0.1.0`. A pre-release builds a `.deb` and an AppImage on Linux, and an NSIS installer on Windows. The RPM and MSI packages stay on stable tags, because they cannot use a version such as `0.0.1-beta.3`.
+
 ### Added
 
 - Lists. Add the address of a shared text file of names and addresses, turn each list on or off, and check for a new version by hand or while Namevane is running. Apply still writes the hosts file. A name you added yourself is used instead of the same name in a list.
+- README examples for a site that does not open because "DNS is not working", and for checking a new server before the public record moves.
+
+### Changed
+
+- The short description is "Point a domain name to the address you choose."
+- Update checks follow releases from the namevane organization.
 
 ## [0.0.1-beta.2] - 2026-11-11
 
