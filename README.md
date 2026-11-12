@@ -1,6 +1,8 @@
 # Namevane
 
-Namevane pins a website name to an address on this computer. You add the name and the address, then apply the pin. After that, this computer opens that name at that address. The browser keeps the name in the address bar and still checks the certificate.
+Point a domain name to the address you choose.
+
+Only the computer running Namevane follows it. Other computers keep using the public record. The browser keeps the domain name in the address bar and still checks the certificate.
 
 The name is provisional. It can change any time before the first public release. The window title is **Namevane by RumenX**. The screen says **Custom addresses**.
 
@@ -14,11 +16,48 @@ A pin is one name and one or two addresses (IPv4, IPv6, or both). Applying it wr
 203.0.113.10 app.example.com
 ```
 
-After that, `app.example.com` resolves to `203.0.113.10` for every program on this computer. The browser requests `https://app.example.com`, sends that name, and checks the certificate against that name. The server at the chosen address has to present a valid certificate for the name. Namevane does not install a certificate authority and does not turn browser warnings off.
+After that, `app.example.com` resolves to `203.0.113.10` for every program on the machine running Namevane. The browser requests `https://app.example.com`, sends that name, and checks the certificate against that name. The server at the chosen address has to present a valid certificate for the name. Namevane does not install a certificate authority and does not turn browser warnings off.
 
-The pin affects this whole computer until it is turned off. Other people, and other computers, are not affected.
+The pin stays in effect until it is turned off. Other machines are not affected.
 
 The addresses above are documentation addresses. In the app they stand for the server address you were given.
+
+## Examples
+
+### A site does not open because "DNS is not working"
+
+Sometimes a website does not open for you, but it opens for other people. The cause can be a "misconfigured DNS server": the server your network uses to look up names gives a wrong answer, or no answer. The website itself is fine.
+
+For example, suppose `wakanda.net` does not open on your computer. It is the website of a fictional African country, used here only as an example. You know the correct address of its server, or someone who runs the site gave it to you.
+
+1. Open Namevane and type `wakanda.net` in the name field.
+2. Type the server address in the IPv4 or IPv6 field.
+3. Press **Add**, then press **Apply**.
+4. Open `https://wakanda.net` in your browser.
+
+On this computer, `wakanda.net` now leads to the address you typed. The address bar still shows `wakanda.net`, and the browser still checks the certificate for that name.
+
+When the DNS problem is fixed, press **Turn all off**. The site then follows the public record again.
+
+Two things to keep in mind:
+
+- Use only an address you trust. Namevane will use whatever address you type.
+- If the browser shows a certificate warning, the server at that address does not present a valid certificate for `wakanda.net`. Namevane does not hide that warning. Ask the people who run the site for the correct address.
+
+### Check a new server before you switch the domain
+
+You run a web application at `shop.example.com`. You are moving it from one server to another, perhaps to a new hosting provider. The new server is at `198.51.100.20`. The public record still points to the old server, so visitors still reach the old one.
+
+Before you change the public record, you want to see that the new server works under the real name.
+
+1. Type `shop.example.com` in the name field.
+2. Type `198.51.100.20` in the IPv4 field.
+3. Press **Add**, then **Apply**.
+4. Open `https://shop.example.com` in your browser. Sign in, open the pages, and try what matters.
+5. If something is wrong, press **Turn all off**. Only this computer was ever affected, so visitors are not affected.
+6. When everything works, change the public record at your domain provider. Then press **Turn all off** on this computer, so it follows the public record again.
+
+The new server must already have a valid certificate for `shop.example.com`. If it does not, the browser shows a warning during the test, and that is the answer you need before the switch.
 
 ## What stays out
 
