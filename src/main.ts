@@ -1,4 +1,5 @@
 import { invoke } from "@tauri-apps/api/core";
+import { listen } from "@tauri-apps/api/event";
 import { language, setLanguage, t } from "./i18n";
 
 type Pin = {
@@ -53,6 +54,14 @@ const settingsUpdate = document.querySelector<HTMLElement>("#settings-update");
 const settingsInstall = document.querySelector<HTMLButtonElement>("#settings-install");
 const settingsReleases = document.querySelector<HTMLButtonElement>("#settings-releases");
 const languageSelect = document.querySelector<HTMLSelectElement>("#language");
+const listForm = document.querySelector<HTMLFormElement>("#list-form");
+const listUrlInput = document.querySelector<HTMLInputElement>("#list-url");
+const listTitleInput = document.querySelector<HTMLInputElement>("#list-title");
+const listInterval = document.querySelector<HTMLSelectElement>("#list-interval");
+const listCheck = document.querySelector<HTMLButtonElement>("#list-check");
+const listAdd = document.querySelector<HTMLButtonElement>("#list-add");
+const listsEmpty = document.querySelector<HTMLElement>("#lists-empty");
+const sourcesList = document.querySelector<HTMLUListElement>("#sources");
 
 type RuntimeSettings = {
   runInBackground: boolean;
@@ -71,6 +80,39 @@ type HostsStatus = {
   blockPresent: boolean;
 };
 
+type PageName = "addresses" | "lists" | "settings";
+
+type SourceEntry = {
+  name: string;
+  addresses: string[];
+  skipped: boolean;
+};
+
+type Source = {
+  id: string;
+  title: string;
+  url: string;
+  enabled: boolean;
+  version: string;
+  names: number;
+  checkedAt: number;
+  error: string | null;
+  entries: SourceEntry[];
+};
+
+type SourceList = {
+  lists: Source[];
+  checkMinutes: number;
+  error: string | null;
+};
+
+type CheckReport = {
+  changed: number;
+  unchanged: number;
+  failed: number;
+  sources: SourceList;
+};
+
 type About = {
   version: string;
   repository: string;
@@ -81,7 +123,11 @@ type About = {
 let editingId: string | null = null;
 let pins: Pin[] = [];
 let lastList: PinList = { pins: [], error: null };
+let sources: Source[] = [];
+let lastSources: SourceList = { lists: [], checkMinutes: 0, error: null };
+let page: PageName = "addresses";
 let saving = false;
+let checkingLists = false;
 let noticeTimer = 0;
 let installing = false;
 
@@ -93,6 +139,10 @@ function message(error: unknown): string {
       : "";
   if (raw.length === 0) {
     return t("error.listSave");
+  }
+  const split = raw.indexOf("|");
+  if (split > 0) {
+    return t(raw.slice(0, split), { line: raw.slice(split + 1) });
   }
   return t(raw);
 }
@@ -144,9 +194,9 @@ function applyTexts(): void {
       node.placeholder = t(key);
     }
   });
-  const settingsOpen = document.querySelector("#page-settings")?.hasAttribute("hidden") === false;
   if (pageTitle) {
-    pageTitle.textContent = t(settingsOpen ? "page.settings" : "page.addresses");
+    const titleKey = page === "settings" ? "page.settings" : page === "lists" ? "page.lists" : "page.addresses";
+    pageTitle.textContent = t(titleKey);
   }
   if (saveButton) {
     saveButton.textContent = t(editingId ? "action.save" : "action.add");
@@ -271,6 +321,7 @@ function renderPin(pin: Pin): HTMLLIElement {
 async function refresh(): Promise<void> {
   const loaded = await invoke<PinList>("list_pins");
   render(loaded);
+  await loadSources();
   await loadHosts();
 }
 
@@ -354,6 +405,7 @@ function applyRuntime(settings: RuntimeSettings): void {
   setLanguage(settings.language);
   applyTexts();
   render(lastList);
+  renderSources(lastSources);
   void loadHosts().catch(() => undefined);
 }
 
@@ -419,16 +471,170 @@ async function installUpdate(): Promise<void> {
   }
 }
 
-function showPage(name: "addresses" | "settings"): void {
+function showPage(name: PageName): void {
+  page = name;
   document.querySelector("#page-addresses")?.toggleAttribute("hidden", name !== "addresses");
+  document.querySelector("#page-lists")?.toggleAttribute("hidden", name !== "lists");
   document.querySelector("#page-settings")?.toggleAttribute("hidden", name !== "settings");
   if (pageTitle) {
-    pageTitle.textContent = t(name === "settings" ? "page.settings" : "page.addresses");
+    const titleKey = name === "settings" ? "page.settings" : name === "lists" ? "page.lists" : "page.addresses";
+    pageTitle.textContent = t(titleKey);
   }
   for (const tab of document.querySelectorAll<HTMLButtonElement>(".tab")) {
     const selected = tab.dataset.page === name;
     tab.classList.toggle("is-selected", selected);
     tab.setAttribute("aria-selected", String(selected));
+  }
+}
+
+function entryLine(entry: SourceEntry): string {
+  return `${entry.name} — ${entry.addresses.join(", ")}`;
+}
+
+function renderSources(loaded: SourceList): void {
+  lastSources = loaded;
+  sources = loaded.lists;
+  if (listsEmpty) {
+    listsEmpty.hidden = loaded.lists.length > 0 || loaded.error !== null;
+  }
+  if (listInterval && document.activeElement !== listInterval) {
+    listInterval.value = String(loaded.checkMinutes);
+  }
+  if (!sourcesList) {
+    return;
+  }
+  sourcesList.replaceChildren();
+  if (loaded.error) {
+    const item = document.createElement("li");
+    item.className = "error";
+    item.textContent = message(loaded.error);
+    sourcesList.append(item);
+  }
+  for (const source of loaded.lists) {
+    sourcesList.append(sourceItem(source));
+  }
+}
+
+function sourceItem(source: Source): HTMLLIElement {
+  const item = document.createElement("li");
+  item.className = source.enabled ? "pin" : "pin is-off";
+  item.dataset.id = source.id;
+
+  const toggle = document.createElement("label");
+  toggle.className = "switch";
+  const box = document.createElement("input");
+  box.type = "checkbox";
+  box.checked = source.enabled;
+  box.dataset.action = "toggle-list";
+  const state = document.createElement("span");
+  state.textContent = t(source.enabled ? "state.on" : "state.off");
+  toggle.append(box, state);
+
+  const text = document.createElement("div");
+  text.className = "pin-text";
+  const title = document.createElement("strong");
+  title.textContent = source.title;
+  const meta = document.createElement("span");
+  const checked = source.checkedAt > 0
+    ? t("lists.checked", { time: new Date(source.checkedAt * 1000).toLocaleString() })
+    : "";
+  meta.textContent = checked.length > 0
+    ? `${t("lists.meta", { count: source.names, version: source.version })} · ${checked}`
+    : t("lists.meta", { count: source.names, version: source.version });
+  const url = document.createElement("span");
+  url.textContent = source.url;
+  text.append(title, meta, url);
+
+  const skipped = source.entries.filter((entry) => entry.skipped).length;
+  if (!source.enabled) {
+    const off = document.createElement("span");
+    off.textContent = t("lists.off");
+    text.append(off);
+  } else if (skipped > 0) {
+    const note = document.createElement("span");
+    note.textContent = t("lists.skipped", { count: skipped });
+    text.append(note);
+  }
+  if (source.error) {
+    const problem = document.createElement("span");
+    problem.className = "error";
+    problem.textContent = message(source.error);
+    text.append(problem);
+  }
+  const visible = source.entries.filter((entry) => !entry.skipped).slice(0, 6);
+  if (visible.length > 0) {
+    const names = document.createElement("ul");
+    names.className = "source-lines";
+    for (const entry of visible) {
+      const row = document.createElement("li");
+      row.textContent = entryLine(entry);
+      names.append(row);
+    }
+    const hidden = source.entries.length - skipped - visible.length;
+    if (hidden > 0) {
+      const more = document.createElement("li");
+      more.textContent = t("lists.more", { count: hidden });
+      names.append(more);
+    }
+    text.append(names);
+  }
+
+  const actions = document.createElement("div");
+  actions.className = "pin-actions";
+  const check = document.createElement("button");
+  check.type = "button";
+  check.dataset.action = "check-list";
+  check.textContent = t("action.checkOne");
+  const remove = document.createElement("button");
+  remove.type = "button";
+  remove.dataset.action = "remove-list";
+  remove.textContent = t("action.remove");
+  actions.append(check, remove);
+
+  item.append(toggle, text, actions);
+  return item;
+}
+
+function checkNotice(report: CheckReport): string {
+  if (report.changed > 0) {
+    return t("notice.listsUpdated");
+  }
+  if (report.failed > 0) {
+    return t("notice.listsFailed");
+  }
+  return t("notice.listsSame");
+}
+
+async function loadSources(): Promise<void> {
+  renderSources(await invoke<SourceList>("list_sources"));
+}
+
+async function checkLists(id: string | null): Promise<void> {
+  if (checkingLists) {
+    return;
+  }
+  checkingLists = true;
+  if (listCheck) {
+    listCheck.disabled = true;
+  }
+  if (listAdd) {
+    listAdd.disabled = true;
+  }
+  try {
+    const report = await invoke<CheckReport>("check_sources", { id });
+    renderSources(report.sources);
+    await loadHosts();
+    notify(checkNotice(report), report.failed > 0 && report.changed === 0);
+  } catch (error: unknown) {
+    notify(message(error), true);
+  } finally {
+    checkingLists = false;
+    if (listCheck) {
+      listCheck.disabled = false;
+    }
+    if (listAdd) {
+      listAdd.disabled = false;
+    }
   }
 }
 
@@ -529,8 +735,10 @@ window.addEventListener("DOMContentLoaded", () => {
     if (!(target instanceof HTMLButtonElement) || !target.dataset.page) {
       return;
     }
-    const page = target.dataset.page === "settings" ? "settings" : "addresses";
-    showPage(page);
+    const name = target.dataset.page;
+    if (name === "settings" || name === "lists" || name === "addresses") {
+      showPage(name);
+    }
   });
 
   exportButton?.addEventListener("click", () => {
@@ -594,6 +802,130 @@ window.addEventListener("DOMContentLoaded", () => {
     void changeRuntime("set_open_at_login", loginInput.checked);
   });
 
+  listForm?.addEventListener("submit", (event) => {
+    event.preventDefault();
+    if (checkingLists || !listUrlInput) {
+      return;
+    }
+    const url = listUrlInput.value.trim();
+    const title = listTitleInput?.value.trim() ?? "";
+    if (url.length === 0) {
+      notify(t("error.listUrl"), true);
+      return;
+    }
+    checkingLists = true;
+    if (listAdd) {
+      listAdd.disabled = true;
+    }
+    if (listCheck) {
+      listCheck.disabled = true;
+    }
+    void invoke<SourceList>("add_source", { source: { title, url } })
+      .then(async (loaded) => {
+        renderSources(loaded);
+        listForm?.reset();
+        if (listInterval) {
+          listInterval.value = String(loaded.checkMinutes);
+        }
+        await loadHosts();
+        const added = loaded.lists[loaded.lists.length - 1];
+        notify(t("notice.listAdded", { name: added?.title ?? url }));
+        listUrlInput.focus();
+      })
+      .catch((error: unknown) => {
+        notify(message(error), true);
+      })
+      .finally(() => {
+        checkingLists = false;
+        if (listAdd) {
+          listAdd.disabled = false;
+        }
+        if (listCheck) {
+          listCheck.disabled = false;
+        }
+      });
+  });
+
+  listCheck?.addEventListener("click", () => {
+    void checkLists(null);
+  });
+
+  listInterval?.addEventListener("change", () => {
+    if (!listInterval) {
+      return;
+    }
+    const minutes = Number(listInterval.value);
+    void invoke<SourceList>("set_list_interval", { minutes })
+      .then((loaded) => {
+        renderSources(loaded);
+        notify(t("notice.setting"));
+      })
+      .catch((error: unknown) => {
+        notify(message(error), true);
+        return loadSources();
+      });
+  });
+
+  sourcesList?.addEventListener("click", (event) => {
+    const target = event.target;
+    if (!(target instanceof HTMLElement)) {
+      return;
+    }
+    const action = target.dataset.action;
+    const item = target.closest<HTMLLIElement>("li");
+    const id = item?.dataset.id;
+    if (!action || !id) {
+      return;
+    }
+    const source = sources.find((entry) => entry.id === id);
+    if (!source) {
+      return;
+    }
+    if (action === "check-list") {
+      void checkLists(id);
+      return;
+    }
+    if (action === "remove-list") {
+      void invoke<SourceList>("remove_source", { id })
+        .then(async (loaded) => {
+          renderSources(loaded);
+          await loadHosts();
+          notify(t("notice.listRemoved", { name: source.title }));
+        })
+        .catch((error: unknown) => notify(message(error), true));
+    }
+  });
+
+  sourcesList?.addEventListener("change", (event) => {
+    const target = event.target;
+    if (!(target instanceof HTMLInputElement) || target.dataset.action !== "toggle-list") {
+      return;
+    }
+    const item = target.closest<HTMLLIElement>("li");
+    const id = item?.dataset.id;
+    if (!id) {
+      return;
+    }
+    void invoke<SourceList>("set_source_enabled", { id, enabled: target.checked })
+      .then(async (loaded) => {
+        renderSources(loaded);
+        await loadHosts();
+      })
+      .catch((error: unknown) => {
+        notify(message(error), true);
+        return loadSources();
+      });
+  });
+
+  void listen<{ changed: number; failed: number; automatic: boolean }>("lists-updated", (event) => {
+    void loadSources().then(() => loadHosts()).catch((error: unknown) => notify(message(error), true));
+    if (event.payload.automatic && event.payload.changed > 0) {
+      notify(t("notice.listsUpdated"));
+    } else if (event.payload.automatic && event.payload.failed > 0) {
+      notify(t("notice.listsFailed"), true);
+    }
+  }).catch(() => undefined);
+
   void refresh().catch((error: unknown) => {
     showError(loadError, message(error));
   });
@@ -605,6 +937,7 @@ window.addEventListener("DOMContentLoaded", () => {
     setLanguage(languageSelect.value);
     applyTexts();
     render(lastList);
+    renderSources(lastSources);
     void invoke("set_language", { language: languageSelect.value }).catch((error: unknown) => {
       notify(message(error), true);
     });

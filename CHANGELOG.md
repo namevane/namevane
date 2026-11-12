@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Added
+
+- Lists. Add the address of a shared text file of names and addresses, turn each list on or off, and check for a new version by hand or while Namevane is running. Apply still writes the hosts file. A name you added yourself is used instead of the same name in a list.
+
 ## [0.0.1-beta.2] - 2026-11-11
 
 A beta tag for the release workflow. This is not `v0.1.0`. A pre-release builds a `.deb` and an AppImage on Linux, and an NSIS installer on Windows. The RPM and MSI packages stay on stable tags, because they cannot use a version such as `0.0.1-beta.2`.

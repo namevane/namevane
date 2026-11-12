@@ -47,8 +47,10 @@ mod tests {
 
     #[test]
     fn bulgarian_has_every_english_key() {
-        let english: Value = serde_json::from_str(include_str!("../../src/locales/en.json")).unwrap();
-        let bulgarian: Value = serde_json::from_str(include_str!("../../src/locales/bg.json")).unwrap();
+        let english: Value =
+            serde_json::from_str(include_str!("../../src/locales/en.json")).unwrap();
+        let bulgarian: Value =
+            serde_json::from_str(include_str!("../../src/locales/bg.json")).unwrap();
         let mut english_keys = Vec::new();
         let mut bulgarian_keys = Vec::new();
         flatten(&english, "", &mut english_keys);

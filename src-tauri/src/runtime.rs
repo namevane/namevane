@@ -119,8 +119,7 @@ pub fn set_open_at_login(
     if enabled {
         launch.enable().map_err(|err| {
             eprintln!("open at login: {err}");
-            "error.loginOn"
-                .to_string()
+            "error.loginOn".to_string()
         })?;
     } else {
         launch.disable().map_err(|err| {
@@ -155,16 +154,27 @@ pub fn install(app: &AppHandle) -> Result<(), String> {
         .lock()
         .map(|state| state.language.clone())
         .unwrap_or_else(|_| english());
-    let open = MenuItem::with_id(app, "open", crate::text::get(&language, "tray.open"), true, None::<&str>)
-        .map_err(|_| "error.tray".to_string())?;
-    let quit = MenuItem::with_id(app, "quit", crate::text::get(&language, "tray.quit"), true, None::<&str>)
-        .map_err(|_| "error.tray".to_string())?;
+    let open = MenuItem::with_id(
+        app,
+        "open",
+        crate::text::get(&language, "tray.open"),
+        true,
+        None::<&str>,
+    )
+    .map_err(|_| "error.tray".to_string())?;
+    let quit = MenuItem::with_id(
+        app,
+        "quit",
+        crate::text::get(&language, "tray.quit"),
+        true,
+        None::<&str>,
+    )
+    .map_err(|_| "error.tray".to_string())?;
     app.manage(ShellMenu {
         open: open.clone(),
         quit: quit.clone(),
     });
-    let menu = Menu::with_items(app, &[&open, &quit])
-        .map_err(|_| "error.tray".to_string())?;
+    let menu = Menu::with_items(app, &[&open, &quit]).map_err(|_| "error.tray".to_string())?;
     let icon = tauri::image::Image::from_bytes(include_bytes!("../icons/128x128.png"))
         .map_err(|_| "error.tray".to_string())?;
     let _tray = TrayIconBuilder::with_id("namevane")
@@ -271,12 +281,11 @@ fn load_file(path: &Path) -> Result<StoredSettings, String> {
 fn save_file(path: &Path, settings: &StoredSettings) -> Result<(), String> {
     if let Some(parent) = path.parent() {
         if !parent.as_os_str().is_empty() {
-            fs::create_dir_all(parent)
-                .map_err(|_| "error.settingSave".to_string())?;
+            fs::create_dir_all(parent).map_err(|_| "error.settingSave".to_string())?;
         }
     }
-    let mut bytes = serde_json::to_vec_pretty(settings)
-        .map_err(|_| "error.settingSave".to_string())?;
+    let mut bytes =
+        serde_json::to_vec_pretty(settings).map_err(|_| "error.settingSave".to_string())?;
     bytes.push(b'\n');
     let temporary = {
         let mut name = path.as_os_str().to_owned();

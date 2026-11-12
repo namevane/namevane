@@ -17,6 +17,7 @@
             <button type="button" class="tab is-selected" data-page="addresses" aria-selected="true" data-i18n="nav.addresses">
               Addresses
             </button>
+            <button type="button" class="tab" data-page="lists" aria-selected="false" data-i18n="nav.lists">Lists</button>
             <button type="button" class="tab" data-page="settings" aria-selected="false" data-i18n="nav.settings">Settings</button>
           </nav>
           <button id="about-open" type="button" data-i18n="nav.about">About</button>
@@ -62,6 +63,37 @@
       <p id="load-error" class="error" role="alert" hidden></p>
       <p id="empty" data-i18n="empty">No addresses yet.</p>
       <ul id="pins"></ul>
+    </div>
+
+    <div id="page-lists" class="page" hidden>
+      <p class="warning" data-i18n="lists.warning">A list can point names on this computer at the addresses in the file, including names you did not type. Sharing a list with your own team is what this is for. A list from someone you do not know can send your bank, your mail, or any other site to an address they control. Namevane does not review lists, and the people who make it are not responsible for the addresses in a list you add. Getting around blocking in a country is not what Namevane is for.</p>
+      <form id="list-form" autocomplete="off">
+        <label class="wide">
+          <span data-i18n="field.listUrl">List address</span>
+          <input id="list-url" name="url" spellcheck="false" autocapitalize="off" placeholder="https://example.com/names.txt" data-i18n-placeholder="placeholder.listUrl" />
+        </label>
+        <label class="wide">
+          <span data-i18n="field.listTitle">Name for this list</span>
+          <input id="list-title" name="title" spellcheck="false" placeholder="Staging" data-i18n-placeholder="placeholder.listTitle" />
+        </label>
+        <label class="wide">
+          <span data-i18n="lists.interval">Check for a new version</span>
+          <select id="list-interval">
+            <option value="0" data-i18n="lists.manual">Only when I press the button</option>
+            <option value="15" data-i18n="lists.every15">Every 15 minutes while Namevane is running</option>
+            <option value="60" data-i18n="lists.everyHour">Every hour while Namevane is running</option>
+            <option value="360" data-i18n="lists.every6">Every 6 hours while Namevane is running</option>
+            <option value="1440" data-i18n="lists.everyDay">Once a day while Namevane is running</option>
+          </select>
+        </label>
+        <div class="form-actions">
+          <button id="list-add" type="submit" data-i18n="action.add">Add</button>
+          <button id="list-check" type="button" data-i18n="action.checkLists">Check for updates</button>
+        </div>
+      </form>
+      <p class="note" data-i18n="lists.applyHint">A downloaded list is saved here. Press Apply on Addresses to use it on this computer. A name you added yourself is used instead of the same name in a list.</p>
+      <p id="lists-empty" data-i18n="lists.empty">No lists yet.</p>
+      <ul id="sources"></ul>
     </div>
 
     <div id="page-settings" class="page" hidden>

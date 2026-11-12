@@ -148,7 +148,8 @@ h1 {
   display: none;
 }
 
-#page-settings {
+#page-settings,
+#page-lists {
   overflow: auto;
 }
 
@@ -286,6 +287,7 @@ button:hover {
 
 #cancel:hover,
 #about-open:hover,
+#list-check:hover,
 .pin-actions button:hover,
 .about-actions button:hover {
   background: #efe8de;
@@ -294,6 +296,7 @@ button:hover {
 @media (prefers-color-scheme: dark) {
   #cancel:hover,
   #about-open:hover,
+  #list-check:hover,
   .pin-actions button:hover,
   .about-actions button:hover {
     background: #322f2c;
@@ -428,9 +431,60 @@ dialog::backdrop {
   font-size: 0.92rem;
 }
 
+.warning,
+.note {
+  margin: 8px 20px 0;
+  color: #5c564e;
+  font-size: 0.92rem;
+}
+
+.warning {
+  padding: 10px 12px;
+  border-radius: 8px;
+  color: #1c1917;
+  background: #efe4d4;
+}
+
+#lists-empty {
+  padding: 4px 20px 0;
+}
+
+#sources {
+  margin: 4px auto 0;
+  padding: 0 20px 16px;
+  list-style: none;
+}
+
+.source-lines {
+  margin: 4px 0 0;
+  padding: 0;
+  list-style: none;
+  font-weight: 400;
+}
+
+#list-interval {
+  width: 100%;
+}
+
+#list-check {
+  color: inherit;
+  background: transparent;
+  border-color: #d5cfc6;
+}
+
 @media (prefers-color-scheme: dark) {
-  .hint {
+  .hint,
+  .note {
     color: #c4bbb0;
+  }
+
+  .warning {
+    color: #f4f0e8;
+    background: #3a3228;
+  }
+
+  #list-check {
+    border-color: #3d3934;
   }
 }
 
@@ -489,6 +543,10 @@ dialog::backdrop {
 .pin-text span {
   color: #5c564e;
   font-weight: 400;
+}
+
+.pin-text .error {
+  margin: 0;
 }
 
 @media (prefers-color-scheme: dark) {

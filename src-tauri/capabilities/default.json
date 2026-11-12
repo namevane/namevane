@@ -20,6 +20,12 @@
     "allow-hosts-status",
     "allow-apply-pins",
     "allow-turn-off-pins",
-    "allow-install-update"
+    "allow-install-update",
+    "allow-list-sources",
+    "allow-add-source",
+    "allow-remove-source",
+    "allow-set-source-enabled",
+    "allow-set-list-interval",
+    "allow-check-sources"
   ]
 }

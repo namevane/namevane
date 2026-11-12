@@ -9,7 +9,7 @@ When `.ai/plan.md` is on the machine, it is the implementation sequence. Follow 
 - A pin is one website name and one or two addresses. Applying it writes one marked block in the hosts file and leaves every other line alone.
 - The browser keeps the name in the address bar and still checks the certificate. Do not install a certificate authority, decrypt TLS, or hide a certificate warning.
 - The pin affects the whole computer until it is turned off. It does not affect any other computer.
-- Do not add a browser extension, a local DNS server, profiles, remote rule lists, a resident administrator service, an account, telemetry, an updater, a database, or a local web server.
+- Do not add a browser extension, a local DNS server, profiles, a built-in catalog of remote lists, a resident administrator service, an account, telemetry, an updater, a database, or a local web server. A person may add the address of a list of names and addresses. Checking that list updates the saved copy only. Apply still writes the hosts file.
 - The window is HTML, CSS, and TypeScript. Do not add React or a component library.
 - Rust does the system work. The first version may use `serde`, `serde_json`, the operating system’s TLS stack, and Hickory for a direct public DNS lookup. `tray-icon` is enabled. The menu-bar icon is shown while Namevane is running.
 - The window runs as the normal user. A helper may run only for Apply and Turn all off, then it exits.

@@ -114,8 +114,8 @@ pub fn install_update(version: &str) -> Result<(), String> {
     let disk_path = directory.join(&disk.name);
     let sums_text = download_text(&sums.url)?;
     download_file(&disk.url, &disk_path)?;
-    let expected = checksum_for(&sums_text, &disk.name)
-        .ok_or_else(|| "error.checksumMissing".to_string())?;
+    let expected =
+        checksum_for(&sums_text, &disk.name).ok_or_else(|| "error.checksumMissing".to_string())?;
     let actual = sha256_file(&disk_path)?;
     if actual != expected {
         let _ = fs::remove_dir_all(&directory);
@@ -213,8 +213,7 @@ fn download_text(url: &str) -> Result<String, String> {
 }
 
 fn download_file(url: &str, path: &Path) -> Result<(), String> {
-    let mut file =
-        fs::File::create(path).map_err(|_| "error.updateSave".to_string())?;
+    let mut file = fs::File::create(path).map_err(|_| "error.updateSave".to_string())?;
     let mut bytes = Vec::new();
     download_to(url, &mut bytes)?;
     file.write_all(&bytes)
@@ -278,10 +277,7 @@ fn stage_and_swap(disk_image: &Path, directory: &Path) -> Result<(), String> {
     #[cfg(not(target_os = "macos"))]
     {
         let _ = (disk_image, directory);
-        Err(
-            "error.manualInstall"
-                .to_string(),
-        )
+        Err("error.manualInstall".to_string())
     }
 }
 
@@ -318,8 +314,7 @@ fn swap_macos_app(disk_image: &Path, directory: &Path) -> Result<(), String> {
 
 #[cfg(target_os = "macos")]
 fn installed_app() -> Result<PathBuf, String> {
-    let executable = std::env::current_exe()
-        .map_err(|_| "error.installFirst".to_string())?;
+    let executable = std::env::current_exe().map_err(|_| "error.installFirst".to_string())?;
     let bundle = executable
         .parent()
         .and_then(Path::parent)

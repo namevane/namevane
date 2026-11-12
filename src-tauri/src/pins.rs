@@ -143,16 +143,16 @@ impl PinStore {
 
     pub fn export_text(&self) -> Result<String, String> {
         self.ensure_writable()?;
-        let mut bytes = serde_json::to_vec_pretty(&self.file)
-            .map_err(|_| "error.listSave".to_string())?;
+        let mut bytes =
+            serde_json::to_vec_pretty(&self.file).map_err(|_| "error.listSave".to_string())?;
         bytes.push(b'\n');
         String::from_utf8(bytes).map_err(|_| "error.listSave".to_string())
     }
 
     pub fn import_text(&mut self, text: &str) -> Result<ImportReport, String> {
         self.ensure_writable()?;
-        let incoming: PinsFile = serde_json::from_str(text)
-            .map_err(|_| "error.importFormat".to_string())?;
+        let incoming: PinsFile =
+            serde_json::from_str(text).map_err(|_| "error.importFormat".to_string())?;
         if incoming.version != VERSION {
             return Err("error.importVersion".to_string());
         }
@@ -316,8 +316,8 @@ fn normalize_name(raw: &str, empty_message: &str) -> Result<String, String> {
     if without_dot.is_empty() || without_dot.parse::<IpAddr>().is_ok() {
         return Err("error.nameNotAddress".to_string());
     }
-    let ascii = idna::domain_to_ascii_strict(without_dot)
-        .map_err(|_| "error.badName".to_string())?;
+    let ascii =
+        idna::domain_to_ascii_strict(without_dot).map_err(|_| "error.badName".to_string())?;
     if is_localhost(&ascii) {
         return Err("error.localhost".to_string());
     }
@@ -335,6 +335,31 @@ fn display_name(ascii: &str) -> String {
     } else {
         ascii.to_string()
     }
+}
+
+pub(crate) fn normalize_pin_name(raw: &str) -> Result<String, String> {
+    normalize_name(raw, "error.nameRequired")
+}
+
+pub(crate) fn show_name(ascii: &str) -> String {
+    display_name(ascii)
+}
+
+pub(crate) fn add_address(addresses: &mut Vec<String>, raw: &str) -> Result<(), String> {
+    let ip = parse_address(raw)?;
+    if addresses.iter().any(|saved| {
+        saved
+            .parse::<IpAddr>()
+            .is_ok_and(|existing| existing.is_ipv4() == ip.is_ipv4())
+    }) {
+        return Err("error.oneEach".to_string());
+    }
+    if ip.is_ipv4() {
+        addresses.insert(0, ip.to_string());
+    } else {
+        addresses.push(ip.to_string());
+    }
+    Ok(())
 }
 
 pub fn load_file(path: &Path) -> Result<PinsFile, String> {
@@ -562,10 +587,7 @@ mod tests {
         let first = store.export_text().unwrap();
         add(&mut store, "other.example.com", "198.51.100.8", "").unwrap();
         let both = store.export_text().unwrap();
-        assert_eq!(
-            store.import_text(&first).unwrap_err(),
-            "error.importNone"
-        );
+        assert_eq!(store.import_text(&first).unwrap_err(), "error.importNone");
 
         let mut fresh = PinStore::open(
             std::env::temp_dir().join(format!("namevane-import-{}", Uuid::new_v4())),
@@ -609,10 +631,7 @@ mod tests {
         let path = dir.join("pins.json");
         fs::write(&path, "{not json").unwrap();
         let mut store = PinStore::open(path.clone());
-        assert_eq!(
-            store.list().error.as_deref(),
-            Some("error.listRead")
-        );
+        assert_eq!(store.list().error.as_deref(), Some("error.listRead"));
         assert!(add(&mut store, "app.example.com", "203.0.113.10", "").is_err());
         assert_eq!(fs::read_to_string(&path).unwrap(), "{not json");
     }

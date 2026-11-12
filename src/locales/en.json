@@ -1,22 +1,28 @@
 {
   "nav": {
     "addresses": "Addresses",
+    "lists": "Lists",
     "settings": "Settings",
     "about": "About"
   },
   "page": {
     "addresses": "Custom addresses",
+    "lists": "Lists",
     "settings": "Settings"
   },
   "field": {
     "name": "Name",
     "ipv4": "IPv4",
     "ipv6": "IPv6",
-    "on": "On"
+    "on": "On",
+    "listUrl": "List address",
+    "listTitle": "Name for this list"
   },
   "placeholder": {
     "ipv4": "203.0.113.10",
-    "ipv6": "2001:db8::10"
+    "ipv6": "2001:db8::10",
+    "listUrl": "https://example.com/names.txt",
+    "listTitle": "Staging"
   },
   "action": {
     "add": "Add",
@@ -32,7 +38,9 @@
     "source": "Source on GitHub",
     "close": "Close",
     "apply": "Apply",
-    "turnOff": "Turn all off"
+    "turnOff": "Turn all off",
+    "checkLists": "Check for updates",
+    "checkOne": "Check"
   },
   "state": {
     "on": "On",
@@ -55,10 +63,15 @@
     "skipped": "{count} already on the list.",
     "downloading": "Downloading the update…",
     "reopen": "Namevane will close and open the new copy.",
-    "needAddress": "Type an IPv4 or IPv6 address."
+    "needAddress": "Type an IPv4 or IPv6 address.",
+    "listAdded": "Added {name}. Press Apply on Addresses to use it on this computer.",
+    "listRemoved": "Removed {name}.",
+    "listsUpdated": "A list has a newer version. Press Apply to use it on this computer.",
+    "listsSame": "The lists are already current.",
+    "listsFailed": "A list could not be downloaded. The last saved copy is still here."
   },
   "hosts": {
-    "notApplied": "This computer is not using this list.",
+    "notApplied": "This computer is not using these addresses yet.",
     "applied": "Applied.",
     "turnedOff": "Turned off.",
     "cancelled": "Nothing was changed."
@@ -76,6 +89,22 @@
     "version": "Version",
     "release": "Release",
     "checking": "Checking…"
+  },
+  "lists": {
+    "warning": "A list can point names on this computer at the addresses in the file, including names you did not type. Sharing a list with your own team is what this is for. A list from someone you do not know can send your bank, your mail, or any other site to an address they control. Namevane does not review lists, and the people who make it are not responsible for the addresses in a list you add. Getting around blocking in a country is not what Namevane is for.",
+    "interval": "Check for a new version",
+    "manual": "Only when I press the button",
+    "every15": "Every 15 minutes while Namevane is running",
+    "everyHour": "Every hour while Namevane is running",
+    "every6": "Every 6 hours while Namevane is running",
+    "everyDay": "Once a day while Namevane is running",
+    "applyHint": "A downloaded list is saved here. Press Apply on Addresses to use it on this computer. A name you added yourself is used instead of the same name in a list.",
+    "empty": "No lists yet.",
+    "meta": "{count} names · version {version}",
+    "checked": "Checked {time}",
+    "skipped": "{count} already set on this computer, so this list does not use them.",
+    "more": "and {count} more",
+    "off": "Off. These names are not used until you turn the list on."
   },
   "about": {
     "summary": "Point a domain name to the address you choose."
@@ -144,6 +173,20 @@
     "hostsCorrupt": "The Namevane block in the hosts file is incomplete. Nothing was written.",
     "hostsWrite": "The hosts file could not be written.",
     "hostsBackup": "A backup of the hosts file could not be saved.",
-    "hostsUnsupported": "Writing the hosts file is available on macOS."
+    "hostsUnsupported": "Writing the hosts file is available on macOS.",
+    "listUrl": "Type an http or https address for the list.",
+    "listHuge": "That list is too large.",
+    "listBinary": "That list is not text.",
+    "listEmpty": "That list has no names.",
+    "listLine": "Line {line} of that list cannot be used.",
+    "listMany": "That list has too many names. Keep it to 2000.",
+    "listDuplicate": "That list address is already added.",
+    "listMissing": "That list is no longer here.",
+    "listDownload": "That list could not be downloaded.",
+    "listLimit": "Namevane keeps up to 30 lists. Remove one first.",
+    "listInterval": "That check interval is not available.",
+    "sourcesRead": "The saved lists could not be read.",
+    "sourcesWrite": "The saved lists could not be written.",
+    "sourcesVersion": "The saved lists are from a newer Namevane."
   }
 }

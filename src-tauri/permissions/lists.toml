@@ -1,0 +1,29 @@
+[[permission]]
+identifier = "allow-list-sources"
+description = "Read the saved shared lists."
+commands.allow = ["list_sources"]
+
+[[permission]]
+identifier = "allow-add-source"
+description = "Download a shared list from an address the person typed."
+commands.allow = ["add_source"]
+
+[[permission]]
+identifier = "allow-remove-source"
+description = "Remove a shared list from the saved copy."
+commands.allow = ["remove_source"]
+
+[[permission]]
+identifier = "allow-set-source-enabled"
+description = "Turn a shared list on or off."
+commands.allow = ["set_source_enabled"]
+
+[[permission]]
+identifier = "allow-set-list-interval"
+description = "Choose how often Namevane checks shared lists while it is running."
+commands.allow = ["set_list_interval"]
+
+[[permission]]
+identifier = "allow-check-sources"
+description = "Check shared lists for a newer version."
+commands.allow = ["check_sources"]

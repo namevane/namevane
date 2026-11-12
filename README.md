@@ -59,17 +59,37 @@ Before you change the public record, you want to see that the new server works u
 
 The new server must already have a valid certificate for `shop.example.com`. If it does not, the browser shows a warning during the test, and that is the answer you need before the switch.
 
+## Lists
+
+A list is a text file of names and addresses that several people can share. You publish it once, at an `http` or `https` address. Each person adds that address in Namevane. When you change the file, they check for a new version, or Namevane checks while it is running. **Apply** on the Addresses page writes the new names into the hosts file. Turning a list off leaves it saved and stops using it.
+
+This is meant for a team. One person who can publish the file keeps it current. Everyone else adds the address once.
+
+```text
+# namevane-list: 3
+# title: Staging
+198.51.100.20 shop.example.com
+2001:db8::10 shop.example.com
+203.0.113.10 api.example.com
+```
+
+`# namevane-list:` is the version, one word such as `3` or `2026-11-12`. `# title:` is the name shown in the window. Other lines that start with `#` are comments. A name may have one IPv4 line and one IPv6 line. A name you added yourself is used instead of the same name in a list. If two lists contain the same name, the one higher on the Lists page is used.
+
+A downloaded list is saved in the app. It does not change the hosts file until you press **Apply**.
+
+A list can point names on this computer at whatever addresses are in the file, including names you did not type. Sharing one inside your team is what this is for. A list from someone you do not know can send your bank, your mail, or any other site to an address they control. Namevane does not review lists, and the people who make it are not responsible for the addresses in a list you add. Getting around blocking in a country is not what Namevane is for.
+
 ## What stays out
 
 - A browser extension, or a local DNS server. The hosts file is the mechanism browsers honor.
-- Profiles, a hosts-file text editor, and remote hosts lists.
+- Profiles and a hosts-file text editor. Namevane does not ship a catalog of lists.
 - A resident administrator service. The password prompt runs only while a change is written.
 - Decrypting TLS, installing a private certificate authority, or hiding a certificate warning.
 - An account, telemetry, a silent updater, a database, and a local web server. A newer release is installed only after you press the button.
 
 ## Status
 
-The window saves a list of custom addresses. You can add, edit, and remove a name, and turn it on or off. A name points to an IPv4 address, an IPv6 address, or both. **Apply** writes those addresses into the hosts file.
+The window saves a list of custom addresses. You can add, edit, and remove a name, and turn it on or off. A name points to an IPv4 address, an IPv6 address, or both. The Lists page adds shared lists from addresses you type, and can check them for a new version. **Apply** writes the enabled addresses into the hosts file.
 
 You can install a local build and open that copy instead of a development window. Settings has **Keep running in the background**, **Open at login**, export and import of the address list, and **Install update** when a newer GitHub release exists. On macOS that button downloads the release, checks its SHA-256 sum, and replaces the installed app. There is no public release yet.
 

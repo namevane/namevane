@@ -211,15 +211,16 @@ fn split_lines(original: &str) -> (Vec<String>, bool) {
     }
     let ended = original.ends_with('\n');
     let body = original.strip_suffix('\n').unwrap_or(original);
-    (
-        body.split('\n').map(str::to_string).collect(),
-        ended,
-    )
+    (body.split('\n').map(str::to_string).collect(), ended)
 }
 
 fn join_lines(rows: &[String], ended_with_newline: bool) -> String {
     if rows.is_empty() {
-        return if ended_with_newline { "\n".to_string() } else { String::new() };
+        return if ended_with_newline {
+            "\n".to_string()
+        } else {
+            String::new()
+        };
     }
     let mut text = rows.join("\n");
     if ended_with_newline {
@@ -229,8 +230,12 @@ fn join_lines(rows: &[String], ended_with_newline: bool) -> String {
 }
 
 fn find_block(rows: &[String]) -> Result<Option<(usize, usize)>, String> {
-    let start = rows.iter().position(|row| row.trim_end_matches('\r') == START);
-    let end = rows.iter().position(|row| row.trim_end_matches('\r') == END);
+    let start = rows
+        .iter()
+        .position(|row| row.trim_end_matches('\r') == START);
+    let end = rows
+        .iter()
+        .position(|row| row.trim_end_matches('\r') == END);
     match (start, end) {
         (Some(start), Some(end)) if start < end => Ok(Some((start, end + 1))),
         (None, None) => Ok(None),
