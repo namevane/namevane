@@ -83,14 +83,14 @@ The release also contains `SHA256SUMS` and `SHA256SUMS.bundle`. The bundle is a 
 ```bash
 cosign verify-blob \
   --bundle SHA256SUMS.bundle \
-  --certificate-identity "https://github.com/OWNER/REPO/.github/workflows/release.yml@refs/tags/vX.Y.Z" \
+  --certificate-identity "https://github.com/namevane/namevane/.github/workflows/release.yml@refs/tags/vX.Y.Z" \
   --certificate-oidc-issuer "https://token.actions.githubusercontent.com" \
   SHA256SUMS
 
 sha256sum -c SHA256SUMS
 ```
 
-Replace `OWNER/REPO` and `vX.Y.Z` with the repository and the tag you downloaded. `sha256sum -c` checks each file named in `SHA256SUMS`.
+Replace `vX.Y.Z` with the tag you downloaded. `sha256sum -c` checks each file named in `SHA256SUMS`.
 
 Before tagging, set the same version in `package.json`, `src-tauri/Cargo.toml`, and `src-tauri/tauri.conf.json`.
 

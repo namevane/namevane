@@ -14,7 +14,7 @@ Namevane has no public release yet. No version is supported until `v0.1.0`.
 Report a security issue in private. Do not open a public issue for an undisclosed vulnerability.
 
 - Email [dev@rumenx.com](mailto:dev@rumenx.com).
-- Once this repository is on GitHub, you can also use [private vulnerability reporting](https://docs.github.com/en/code-security/security-advisories/guidance-on-reporting-and-writing-information-about-vulnerabilities/privately-reporting-a-security-vulnerability).
+- You can also use [private vulnerability reporting](https://docs.github.com/en/code-security/security-advisories/guidance-on-reporting-and-writing-information-about-vulnerabilities/privately-reporting-a-security-vulnerability) on [namevane/namevane](https://github.com/namevane/namevane).
 
 Say what you did, what you expected, and what happened. If the report is about a hosts-file write, a copy of the file helps. Remove addresses you do not want to share.
 

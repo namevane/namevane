@@ -9,8 +9,8 @@ use std::time::Duration;
 use serde::Serialize;
 use sha2::{Digest, Sha256};
 
-pub const REPOSITORY: &str = "https://github.com/RumenDamyanov/namevane";
-const RELEASES: &str = "https://api.github.com/repos/RumenDamyanov/namevane/releases/latest";
+pub const REPOSITORY: &str = "https://github.com/namevane/namevane";
+const RELEASES: &str = "https://api.github.com/repos/namevane/namevane/releases/latest";
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize)]
 #[serde(rename_all = "camelCase")]
@@ -38,7 +38,7 @@ pub fn about(version: &str) -> About {
         maker: "RumenX",
         version: version.to_string(),
         repository: REPOSITORY,
-        releases: "https://github.com/RumenDamyanov/namevane/releases",
+        releases: "https://github.com/namevane/namevane/releases",
         update: check_for_update(version),
     }
 }
@@ -202,7 +202,7 @@ fn checksum_for(sums: &str, file_name: &str) -> Option<String> {
 }
 
 fn is_release_download(url: &str) -> bool {
-    url.starts_with("https://github.com/RumenDamyanov/namevane/releases/download/")
+    url.starts_with("https://github.com/namevane/namevane/releases/download/")
         && !url.contains(['\n', '\r', ' '])
 }
 
@@ -515,11 +515,11 @@ mod tests {
         let assets = vec![
             Asset {
                 name: "Namevane_0.1.1_x64.dmg".to_string(),
-                url: "https://github.com/RumenDamyanov/namevane/releases/download/v0.1.1/Namevane_0.1.1_x64.dmg".to_string(),
+                url: "https://github.com/namevane/namevane/releases/download/v0.1.1/Namevane_0.1.1_x64.dmg".to_string(),
             },
             Asset {
                 name: "Namevane_0.1.1_aarch64.dmg".to_string(),
-                url: "https://github.com/RumenDamyanov/namevane/releases/download/v0.1.1/Namevane_0.1.1_aarch64.dmg".to_string(),
+                url: "https://github.com/namevane/namevane/releases/download/v0.1.1/Namevane_0.1.1_aarch64.dmg".to_string(),
             },
         ];
         assert_eq!(
@@ -541,10 +541,10 @@ mod tests {
     fn only_the_namevane_repository_may_be_opened() {
         assert!(is_project_url(REPOSITORY));
         assert!(is_project_url(
-            "https://github.com/RumenDamyanov/namevane/releases/tag/v0.1.0"
+            "https://github.com/namevane/namevane/releases/tag/v0.1.0"
         ));
         assert!(!is_project_url(
-            "https://github.com/RumenDamyanov/namevane-other"
+            "https://github.com/namevane/namevane-other"
         ));
         assert!(!is_project_url("https://example.com"));
     }
