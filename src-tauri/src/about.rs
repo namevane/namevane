@@ -1,6 +1,8 @@
 use std::fs;
 use std::io::{Read, Write};
-use std::path::{Path, PathBuf};
+use std::path::Path;
+#[cfg(target_os = "macos")]
+use std::path::PathBuf;
 use std::process::Command;
 use std::time::Duration;
 
@@ -123,23 +125,20 @@ pub fn install_update(version: &str) -> Result<(), String> {
 }
 
 fn fetch_latest_release() -> Result<Option<Release>, String> {
-    let agent = ureq::AgentBuilder::new()
-        .timeout(Duration::from_secs(8))
-        .build();
-    let response = agent
+    let mut response = match http_agent(Duration::from_secs(8))
         .get(RELEASES)
-        .set("User-Agent", "Namevane")
-        .set("Accept", "application/vnd.github+json")
-        .call();
-    let response = match response {
+        .header("User-Agent", "Namevane")
+        .header("Accept", "application/vnd.github+json")
+        .call()
+    {
         Ok(response) => response,
-        Err(ureq::Error::Status(404, _)) => return Ok(None),
+        Err(ureq::Error::StatusCode(404)) => return Ok(None),
         Err(err) => {
             eprintln!("release check: {err}");
             return Err("error.releaseCheck".to_string());
         }
     };
-    let body: serde_json::Value = response.into_json().map_err(|err| {
+    let body: serde_json::Value = response.body_mut().read_json().map_err(|err| {
         eprintln!("release check body: {err}");
         "error.releaseCheck".to_string()
     })?;
@@ -226,23 +225,34 @@ fn download_to(url: &str, destination: &mut Vec<u8>) -> Result<(), String> {
     if !is_release_download(url) {
         return Err("error.badDownload".to_string());
     }
-    let agent = ureq::AgentBuilder::new()
-        .timeout(Duration::from_secs(120))
-        .build();
-    let response = agent
+    let mut response = http_agent(Duration::from_secs(120))
         .get(url)
-        .set("User-Agent", "Namevane")
+        .header("User-Agent", "Namevane")
         .call()
         .map_err(|err| {
             eprintln!("update download: {err}");
             "error.updateDownload".to_string()
         })?;
     response
-        .into_reader()
+        .body_mut()
+        .as_reader()
         .take(200 * 1024 * 1024)
         .read_to_end(destination)
         .map_err(|_| "error.updateDownload".to_string())?;
     Ok(())
+}
+
+fn http_agent(timeout: Duration) -> ureq::Agent {
+    ureq::Agent::config_builder()
+        .timeout_global(Some(timeout))
+        .tls_config(
+            ureq::tls::TlsConfig::builder()
+                .provider(ureq::tls::TlsProvider::NativeTls)
+                .root_certs(ureq::tls::RootCerts::PlatformVerifier)
+                .build(),
+        )
+        .build()
+        .new_agent()
 }
 
 fn sha256_file(path: &Path) -> Result<String, String> {
